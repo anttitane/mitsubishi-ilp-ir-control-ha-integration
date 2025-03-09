@@ -101,3 +101,8 @@ def temperature_unit(self):
                     _LOGGER.info("Sent command: %s", response_data)
             except aiohttp.ClientError as e:
                 _LOGGER.error("Error sending command: %s", e)
+                
+async def async_setup_entry(hass, entry, async_add_entities):
+    """Set up the Mitsubishi Air Pump climate entity."""
+    host = entry.data.get("host")
+    async_add_entities([MitsubishiAirPump(host)], True)
