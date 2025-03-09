@@ -1,10 +1,7 @@
 import logging
 import requests
-from homeassistant.components.climate import ClimateEntity
+from homeassistant.components.climate import ClimateEntity, HVACMode
 from homeassistant.components.climate.const import (
-    HVAC_MODE_OFF,
-    HVAC_MODE_COOL,
-    HVAC_MODE_HEAT,
     SUPPORT_TARGET_TEMPERATURE,
     SUPPORT_FAN_MODE
 )
@@ -20,7 +17,7 @@ class MitsubishiAirPump(ClimateEntity):
     def __init__(self, host):
         """Initialize the air pump."""
         self._host = host
-        self._hvac_mode = HVAC_MODE_OFF
+        self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
         self._fan_mode = "auto"
 
@@ -37,7 +34,7 @@ class MitsubishiAirPump(ClimateEntity):
     @property
     def hvac_modes(self):
         """List the available HVAC modes."""
-        return [HVAC_MODE_OFF, HVAC_MODE_COOL, HVAC_MODE_HEAT]
+        return [HVACMode.OFF, HVACMode.COOL, HVACMode.HEAT]
 
     @property
     def hvac_mode(self):
@@ -77,16 +74,19 @@ class MitsubishiAirPump(ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode):
         """Set the HVAC mode."""
-        self._hvac_mode = hvac_mode
-        self._send_command()
+        if hvac_mode in self.hvac_modes:
+            self._hvac_mode = hvac_mode
+            self._send_command()
+        else:
+            _LOGGER.warning("Invalid HVAC mode: %s", hvac_mode)
 
     def _send_command(self):
         """Send command to FastAPI server."""
         url = f"http://{self._host}:8000/air_pump/"
 
-        if self._hvac_mode == HVAC_MODE_COOL:
+        if self._hvac_mode == HVACMode.COOL:
             url += "cool/"
-        elif self._hvac_mode == HVAC_MODE_HEAT:
+        elif self._hvac_mode == HVACMode.HEAT:
             url += "heat/"
         else:
             url += "off/"
@@ -100,6 +100,7 @@ class MitsubishiAirPump(ClimateEntity):
 
         try:
             response = requests.post(url, json=data)
+            response.raise_for_status()
             _LOGGER.info("Sent command: %s", response.json())
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             _LOGGER.error("Error sending command: %s", e)
