@@ -1,10 +1,6 @@
 import logging
-import requests
+import aiohttp
 from homeassistant.components.climate import ClimateEntity, HVACMode, ClimateEntityFeature
-from homeassistant.components.climate.const import (
-    SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_FAN_MODE
-)
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,8 +29,8 @@ class MitsubishiAirPump(ClimateEntity):
 
     @property
     def hvac_modes(self):
-        """List the available HVAC modes."""
-        return [HVACMode.OFF, HVACMode.COOL, HVACMode.HEAT]
+        """Return available HVAC modes."""
+        return {HVACMode.OFF, HVACMode.COOL, HVACMode.HEAT}
 
     @property
     def hvac_mode(self):
@@ -43,7 +39,7 @@ class MitsubishiAirPump(ClimateEntity):
 
     @property
     def supported_features(self):
-        """Return the supported features."""
+        """Return supported features."""
         return SUPPORT_FLAGS
 
     @property
@@ -61,27 +57,27 @@ class MitsubishiAirPump(ClimateEntity):
         """Return the current fan mode."""
         return self._fan_mode
 
-    def set_temperature(self, **kwargs):
+    async def async_set_temperature(self, **kwargs):
         """Set the target temperature."""
         if ATTR_TEMPERATURE in kwargs:
             self._target_temperature = kwargs[ATTR_TEMPERATURE]
-            self._send_command()
+            await self._async_send_command()
 
-    def set_fan_mode(self, fan_mode):
+    async def async_set_fan_mode(self, fan_mode):
         """Set the fan mode."""
         self._fan_mode = fan_mode
-        self._send_command()
+        await self._async_send_command()
 
-    def set_hvac_mode(self, hvac_mode):
+    async def async_set_hvac_mode(self, hvac_mode):
         """Set the HVAC mode."""
         if hvac_mode in self.hvac_modes:
             self._hvac_mode = hvac_mode
-            self._send_command()
+            await self._async_send_command()
         else:
             _LOGGER.warning("Invalid HVAC mode: %s", hvac_mode)
 
-    def _send_command(self):
-        """Send command to FastAPI server."""
+    async def _async_send_command(self):
+        """Send command to FastAPI server asynchronously."""
         url = f"http://{self._host}:8000/air_pump/"
 
         if self._hvac_mode == HVACMode.COOL:
@@ -98,9 +94,10 @@ class MitsubishiAirPump(ClimateEntity):
             "horizontal_mode": "middle"
         }
 
-        try:
-            response = requests.post(url, json=data)
-            response.raise_for_status()
-            _LOGGER.info("Sent command: %s", response.json())
-        except requests.exceptions.RequestException as e:
-            _LOGGER.error("Error sending command: %s", e)
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(url, json=data) as response:
+                    response_data = await response.json()
+                    _LOGGER.info("Sent command: %s", response_data)
+            except aiohttp.ClientError as e:
+                _LOGGER.error("Error sending command: %s", e)
