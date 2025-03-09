@@ -54,6 +54,17 @@ class MitsubishiAirPump(ClimateEntity):
     def fan_mode(self):
         """Return the current fan mode."""
         return self._fan_mode
+    
+    @property
+    def device_info(self):
+        """Return device information to group the entity under a device."""
+        return {
+            "identifiers": {("mitsubishi_airpump", self._host)},
+            "name": "Mitsubishi Air Pump",
+            "manufacturer": "Mitsubishi Electric, integration @anttitane",
+            "model": "Smart AC",
+            "sw_version": "1.0",
+    }
 
     async def async_set_temperature(self, **kwargs):
         """Set the target temperature."""
@@ -102,5 +113,14 @@ class MitsubishiAirPump(ClimateEntity):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up the Mitsubishi Air Pump climate entity."""
+    _LOGGER.debug("async_setup_entry called for Mitsubishi Air Pump")
+
     host = entry.data.get("host")
-    async_add_entities([MitsubishiAirPump(host)], True)
+    if not host:
+        _LOGGER.error("No host provided for Mitsubishi Air Pump entity")
+        return
+
+    entity = MitsubishiAirPump(host)
+    _LOGGER.debug(f"Adding entity: {entity.name}")
+
+    async_add_entities([entity], True)
