@@ -1,7 +1,7 @@
 import logging
 import aiohttp
 from homeassistant.components.climate import ClimateEntity, HVACMode, ClimateEntityFeature
-from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
+from homeassistant.const import UnitOfTemperature, ATTR_TEMPERATURE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ class MitsubishiAirPump(ClimateEntity):
         """Return the name of the climate entity."""
         return "Mitsubishi Air Pump"
 
-    @property
-    def temperature_unit(self):
-        """Return the unit of measurement."""
-        return TEMP_CELSIUS
+@property
+def temperature_unit(self):
+    """Return the unit of measurement."""
+    return UnitOfTemperature.CELSIUS
 
     @property
     def hvac_modes(self):
