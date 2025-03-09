@@ -1,0 +1,10 @@
+{
+    "domain": "mitsubishi_airpump",
+    "name": "Mitsubishi Air Pump",
+    "documentation": "https://github.com/anttitane/mitsubishi-ilp-ir-control-ha-integration/blob/main/README.md",
+    "dependencies": [],
+    "codeowners": ["@anttitane"],
+    "version": "1.0.0",
+    "requirements": []
+  }
+  

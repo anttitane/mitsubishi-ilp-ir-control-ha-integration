@@ -1,0 +1,60 @@
+{
+    "title": "Mitsubishi Air Pump",
+    "config": {
+      "step": {
+        "user": {
+          "title": "Configure Mitsubishi Air Pump",
+          "description": "Enter the details of your Mitsubishi Air Pump.",
+          "data": {
+            "host": "Device IP Address",
+            "port": "API Port"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "Failed to connect to the device."
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Adjust settings",
+          "data": {
+            "polling_interval": "Polling interval (seconds)"
+          }
+        }
+      }
+    },
+    "entity": {
+      "climate": {
+        "mitsubishi_airpump": {
+          "name": "Mitsubishi Air Pump",
+          "state": {
+            "cool": "Cooling",
+            "heat": "Heating",
+            "off": "Off"
+          },
+          "attributes": {
+            "fan_mode": "Fan Mode",
+            "target_temperature": "Target Temperature",
+            "current_temperature": "Current Temperature"
+          }
+        }
+      }
+    },
+    "services": {
+      "set_temperature": {
+        "name": "Set Temperature",
+        "description": "Set the target temperature for the air pump."
+      },
+      "set_fan_mode": {
+        "name": "Set Fan Mode",
+        "description": "Set the fan mode (auto, low, medium, high)."
+      },
+      "turn_off": {
+        "name": "Turn Off",
+        "description": "Turn off the air pump."
+      }
+    }
+  }
+  
