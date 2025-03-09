@@ -2,6 +2,8 @@ import logging
 import aiohttp
 from homeassistant.components.climate import ClimateEntity, HVACMode, ClimateEntityFeature
 from homeassistant.const import UnitOfTemperature, ATTR_TEMPERATURE
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,16 +18,12 @@ class MitsubishiAirPump(ClimateEntity):
         self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
         self._fan_mode = "auto"
+        self._attr_temperature_unit = UnitOfTemperature.CELSIUS
 
     @property
     def name(self):
         """Return the name of the climate entity."""
         return "Mitsubishi Air Pump"
-
-@property
-def temperature_unit(self):
-    """Return the unit of measurement."""
-    return UnitOfTemperature.CELSIUS
 
     @property
     def hvac_modes(self):
@@ -101,8 +99,8 @@ def temperature_unit(self):
                     _LOGGER.info("Sent command: %s", response_data)
             except aiohttp.ClientError as e:
                 _LOGGER.error("Error sending command: %s", e)
-                
-async def async_setup_entry(hass, entry, async_add_entities):
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up the Mitsubishi Air Pump climate entity."""
     host = entry.data.get("host")
     async_add_entities([MitsubishiAirPump(host)], True)
