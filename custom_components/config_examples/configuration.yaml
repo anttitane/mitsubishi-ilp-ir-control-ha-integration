@@ -1,3 +1,0 @@
-climate:
-  - platform: mitsubishi_airpump
-    host: "192.168.1.100"
