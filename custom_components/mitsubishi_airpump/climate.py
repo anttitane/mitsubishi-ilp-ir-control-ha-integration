@@ -4,6 +4,7 @@ from homeassistant.components.climate import ClimateEntity, HVACMode, ClimateEnt
 from homeassistant.const import UnitOfTemperature, ATTR_TEMPERATURE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
