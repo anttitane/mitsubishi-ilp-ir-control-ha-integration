@@ -14,11 +14,26 @@ class MitsubishiAirPump(ClimateEntity):
 
     def __init__(self, host):
         """Initialize the air pump."""
+        _LOGGER.debug("Initializing Mitsubishi Air Pump entity")
         self._host = host
         self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
         self._fan_mode = "auto"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
+
+        self._attr_unique_id = f"mitsubishi_airpump_{host}"
+        self._attr_name = "Mitsubishi Air Pump"
+
+    @property
+    def device_info(self):
+        """Return device information to link entity to a device."""
+        return {
+            "identifiers": {(DOMAIN, self._host)},
+            "name": "Mitsubishi Air Pump",
+            "manufacturer": "@anttitane",
+            "model": "Smart AC",
+            "sw_version": "1.0",
+        }
 
     @property
     def name(self):
@@ -54,17 +69,6 @@ class MitsubishiAirPump(ClimateEntity):
     def fan_mode(self):
         """Return the current fan mode."""
         return self._fan_mode
-    
-    @property
-    def device_info(self):
-        """Return device information to group the entity under a device."""
-        return {
-            "identifiers": {("mitsubishi_airpump", self._host)},
-            "name": "Mitsubishi Air Pump",
-            "manufacturer": "Mitsubishi Electric, integration @anttitane",
-            "model": "Smart AC",
-            "sw_version": "1.0",
-    }
 
     async def async_set_temperature(self, **kwargs):
         """Set the target temperature."""
