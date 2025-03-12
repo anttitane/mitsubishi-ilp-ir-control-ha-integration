@@ -8,11 +8,14 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE
+SUPPORT_FLAGS = (
+    ClimateEntityFeature.TARGET_TEMPERATURE |
+    ClimateEntityFeature.FAN_MODE |
+    ClimateEntityFeature.SWING_MODE |
+    ClimateEntityFeature.SWING_HORIZONTAL_MODE
+)
 
 class MitsubishiAirPump(ClimateEntity):
-    """Representation of a Mitsubishi Air Pump."""
-
     def __init__(self, host):
         """Initialize the air pump."""
         _LOGGER.debug("Initializing Mitsubishi Air Pump entity")
@@ -20,8 +23,9 @@ class MitsubishiAirPump(ClimateEntity):
         self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
         self._fan_mode = "auto"
+        self._swing_mode = "middle"
+        self._swing_horizontal_mode = "middle"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
-
         self._attr_unique_id = f"mitsubishi_airpump_{host}"
         self._attr_name = "Mitsubishi Air Pump"
 
@@ -71,6 +75,34 @@ class MitsubishiAirPump(ClimateEntity):
         """Return the current fan mode."""
         return self._fan_mode
 
+    @property
+    def swing_mode(self):
+        """Return the current vertical swing mode."""
+        return self._swing_mode
+
+    @property
+    def swing_horizontal_mode(self):
+        """Return the current horizontal swing mode."""
+        return self._swing_horizontal_mode
+
+    @property
+    def swing_modes(self):
+        """Return available vertical swing modes."""
+        return ["auto", "top", "middle_top", "middle", "middle_bottom", "bottom", "swing"]
+
+    @property
+    def swing_horizontal_modes(self):
+        """Return available horizontal swing modes."""
+        return ["not_set", "left", "middle_left", "middle", "middle_right", "right", "swing"]
+
+    @property
+    def extra_state_attributes(self):
+        """Return the device specific state attributes."""
+        return {
+            "swing_mode": self._swing_mode,
+            "swing_horizontal_mode": self._swing_horizontal_mode,
+        }
+
     async def async_set_temperature(self, **kwargs):
         """Set the target temperature."""
         if ATTR_TEMPERATURE in kwargs:
@@ -90,10 +122,25 @@ class MitsubishiAirPump(ClimateEntity):
         else:
             _LOGGER.warning("Invalid HVAC mode: %s", hvac_mode)
 
+    async def async_set_swing_mode(self, swing_mode):
+        """Set the vertical swing mode."""
+        if swing_mode in self.swing_modes:
+            self._swing_mode = swing_mode
+            await self._async_send_command()
+        else:
+            _LOGGER.warning("Invalid swing mode: %s", swing_mode)
+
+    async def async_set_swing_horizontal_mode(self, swing_horizontal_mode):
+        """Set the horizontal swing mode."""
+        if swing_horizontal_mode in self.swing_horizontal_modes:
+            self._swing_horizontal_mode = swing_horizontal_mode
+            await self._async_send_command()
+        else:
+            _LOGGER.warning("Invalid swing horizontal mode: %s", swing_horizontal_mode)
+
     async def _async_send_command(self):
         """Send command to FastAPI server asynchronously."""
         url = f"http://{self._host}:8000/air_pump/"
-
         if self._hvac_mode == HVACMode.COOL:
             url += "cool/"
         elif self._hvac_mode == HVACMode.HEAT:
@@ -104,8 +151,8 @@ class MitsubishiAirPump(ClimateEntity):
         data = {
             "temperature": self._target_temperature,
             "fan_speed": self._fan_mode,
-            "vertical_mode": "middle",
-            "horizontal_mode": "middle"
+            "vertical_mode": self._swing_mode,
+            "horizontal_mode": self._swing_horizontal_mode
         }
 
         async with aiohttp.ClientSession() as session:
@@ -119,7 +166,6 @@ class MitsubishiAirPump(ClimateEntity):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up the Mitsubishi Air Pump climate entity."""
     _LOGGER.debug("async_setup_entry called for Mitsubishi Air Pump")
-
     host = entry.data.get("host")
     if not host:
         _LOGGER.error("No host provided for Mitsubishi Air Pump entity")
@@ -127,5 +173,4 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     entity = MitsubishiAirPump(host)
     _LOGGER.debug(f"Adding entity: {entity.name}")
-
     async_add_entities([entity], True)
