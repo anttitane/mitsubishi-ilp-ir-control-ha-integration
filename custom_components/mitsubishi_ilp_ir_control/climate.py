@@ -15,26 +15,26 @@ SUPPORT_FLAGS = (
     ClimateEntityFeature.SWING_HORIZONTAL_MODE
 )
 
-class MitsubishiAirPump(ClimateEntity):
+class MitsubishiIlpIrControl(ClimateEntity):
     def __init__(self, host):
         """Initialize the air pump."""
-        _LOGGER.debug("Initializing Mitsubishi Air Pump entity")
+        _LOGGER.debug("Initializing Mitsubishi ILP IR Control entity")
         self._host = host
         self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
         self._fan_mode = "auto"
-        self._swing_mode = "middle"
+        self._swing_mode = "middle_top"
         self._swing_horizontal_mode = "middle"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_unique_id = f"mitsubishi_ilp_ir_control_{host}"
-        self._attr_name = "Mitsubishi Air Pump"
+        self._attr_name = "Mitsubishi ILP IR Control"
 
     @property
     def device_info(self):
         """Return device information to link entity to a device."""
         return {
             "identifiers": {(DOMAIN, self._host)},
-            "name": "Mitsubishi Air Pump",
+            "name": "Mitsubishi ILP IR Control",
             "manufacturer": "@anttitane",
             "model": "Smart AC",
             "sw_version": "1.0",
@@ -43,7 +43,7 @@ class MitsubishiAirPump(ClimateEntity):
     @property
     def name(self):
         """Return the name of the climate entity."""
-        return "Mitsubishi Air Pump"
+        return "Mitsubishi ILP IR Control"
 
     @property
     def hvac_modes(self):
@@ -68,7 +68,7 @@ class MitsubishiAirPump(ClimateEntity):
     @property
     def fan_modes(self):
         """Return the available fan modes."""
-        return ["auto", "low", "med", "high"]
+        return ["auto", "low", "med", "high"] # TODO: med needs to be changed to Medium
 
     @property
     def fan_mode(self):
@@ -164,13 +164,13 @@ class MitsubishiAirPump(ClimateEntity):
                 _LOGGER.error("Error sending command: %s", e)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up the Mitsubishi Air Pump climate entity."""
-    _LOGGER.debug("async_setup_entry called for Mitsubishi Air Pump")
+    """Set up the Mitsubishi ILP IR Control climate entity."""
+    _LOGGER.debug("async_setup_entry called for Mitsubishi ILP IR Control")
     host = entry.data.get("host")
     if not host:
-        _LOGGER.error("No host provided for Mitsubishi Air Pump entity")
+        _LOGGER.error("No host provided for Mitsubishi ILP IR Control entity")
         return
 
-    entity = MitsubishiAirPump(host)
+    entity = MitsubishiIlpIrControl(host)
     _LOGGER.debug(f"Adding entity: {entity.name}")
     async_add_entities([entity], True)
