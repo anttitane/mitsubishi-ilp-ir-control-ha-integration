@@ -1,8 +1,8 @@
-# Mitsubishi ILP IR Control Home Assistant Integration
+# 🌡️ Mitsubishi ILP IR Control Home Assistant Integration
 
 This repository contains a Home Assistant integration to control Mitsubishi air conditioners via Infrared using a Raspberry Pi. The integration communicates with a separate IR control server hosted on a Raspberry Pi.
 
-## Overview
+## 📖 Overview
 
 The **Mitsubishi ILP IR Control** integration provides a convenient way to control your Mitsubishi air pump unit using Home Assistant's familiar interface. It supports basic functionalities such as:
 
@@ -12,7 +12,7 @@ The **Mitsubishi ILP IR Control** integration provides a convenient way to contr
 - Fan speed control
 - Vertical and Horizontal swing modes
 
-## Components
+## 📦 Components
 
 The integration consists of:
 - `climate.py`: Implements the Climate entity in Home Assistant, enabling control over temperature, fan modes, and swing modes.
@@ -22,17 +22,17 @@ The integration consists of:
 - `config_flow.py`: Enables configuration through Home Assistant UI with dynamic forms.
 - `en.json`: Localization strings for Home Assistant.
 
-## Dependencies
+## ⚙️ Dependencies
 
 - The integration relies on a backend IR server running on a separate device (Raspberry Pi Zero W). The backend is available in the [mitsubishi-ilp-ir-control](https://github.com/anttitane/mitsubishi-ilp-ir-control) repository.
 
-## Installation
+## 🚀 Installation
 
 1. Clone or download this repository.
 2. Place the folder `mitsubishi_ilp_ir_control` from the repo folder `custom_components` in your Home Assistant `custom_components` directory.
 3. Restart Home Assistant.
 
-## Configuration
+## 🛠️ Configuration
 
 ### Setup via Home Assistant UI
 
@@ -41,7 +41,7 @@ The integration consists of:
 3. Search for `Mitsubishi ILP IR Control` and select it.
 4. Enter the IP address of the device running the IR server (Raspberry Pi).
 
-## Services Provided
+## 📌 Services Provided
 
 | Service                    | Description                            |
 |----------------------------|----------------------------------------|
@@ -50,17 +50,17 @@ The integration consists of:
 | `set_swing_mode` | Adjusts the vertical swing mode.        |
 | `set_swing_horizontal_mode` | Adjusts the horizontal swing mode.     |
 
-## Troubleshooting
+## 🧾 Troubleshooting
 
 If issues arise, check the logs from Home Assistant and ensure:
 - Your backend IR control server is running properly.
 - IP addresses and network configurations are correct.
 
-## Contributing
+## 🤝 Contributing
 
 Feel free to submit issues, feature requests, or pull requests.
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
