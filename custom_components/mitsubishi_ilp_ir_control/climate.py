@@ -26,7 +26,7 @@ class MitsubishiAirPump(ClimateEntity):
         self._swing_mode = "middle"
         self._swing_horizontal_mode = "middle"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
-        self._attr_unique_id = f"mitsubishi_airpump_{host}"
+        self._attr_unique_id = f"mitsubishi_ilp_ir_control_{host}"
         self._attr_name = "Mitsubishi Air Pump"
 
     @property

@@ -27,7 +27,7 @@
   },
   "entity": {
     "climate": {
-      "mitsubishi_airpump": {
+      "mitsubishi_ilp_ir_control": {
         "name": "Mitsubishi Air Pump",
         "state": {
           "cool": "Cooling",
