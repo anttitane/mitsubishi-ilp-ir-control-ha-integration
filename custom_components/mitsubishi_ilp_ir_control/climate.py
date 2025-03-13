@@ -15,6 +15,15 @@ SUPPORT_FLAGS = (
     ClimateEntityFeature.SWING_HORIZONTAL_MODE
 )
 
+# Fan mode mapping
+FAN_MODE_DISPLAY_TO_INTERNAL = {
+    "Auto": "auto",
+    "Low": "low",
+    "Medium": "med",      
+    "High": "high"
+}
+FAN_MODE_INTERNAL_TO_DISPLAY = {v: k for k, v in FAN_MODE_DISPLAY_TO_INTERNAL.items()}
+
 class MitsubishiIlpIrControl(ClimateEntity):
     def __init__(self, host):
         """Initialize the air pump."""
@@ -67,13 +76,17 @@ class MitsubishiIlpIrControl(ClimateEntity):
 
     @property
     def fan_modes(self):
-        """Return the available fan modes."""
-        return ["auto", "low", "med", "high"] # TODO: med needs to be changed to Medium
-
+        """
+        Return the list of fan modes to show in the UI.
+        """
+        return list(FAN_MODE_DISPLAY_TO_INTERNAL.keys())
+    
     @property
     def fan_mode(self):
-        """Return the current fan mode."""
-        return self._fan_mode
+        """
+        Return the *display* version of the current fan mode.
+        """
+        return FAN_MODE_INTERNAL_TO_DISPLAY.get(self._fan_mode, "Auto")
 
     @property
     def swing_mode(self):
@@ -110,8 +123,12 @@ class MitsubishiIlpIrControl(ClimateEntity):
             await self._async_send_command()
 
     async def async_set_fan_mode(self, fan_mode):
-        """Set the fan mode."""
-        self._fan_mode = fan_mode
+        """
+        Translate the selected display fan mode (e.g. "Medium") 
+        back to internal value ("med") for sending to controller.
+        """
+        internal_fan_mode = FAN_MODE_DISPLAY_TO_INTERNAL.get(fan_mode, "auto")
+        self._fan_mode = internal_fan_mode
         await self._async_send_command()
 
     async def async_set_hvac_mode(self, hvac_mode):
