@@ -57,7 +57,7 @@ After installing the custom integration, you can add the `climate.mitsubishi_ilp
 ```yaml
 - type: thermostat
   entity: climate.mitsubishi_ilp_ir_control
-  name: Mistubishi FD25
+  name: Mitsubishi FD25
   features:
     - type: climate-hvac-modes
       hvac_modes:
