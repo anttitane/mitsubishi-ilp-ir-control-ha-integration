@@ -5,8 +5,8 @@ from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
 
-class MitsubishiAirPumpConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Mitsubishi Air Pump."""
+class MitsubishiIlpIrControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for Mitsubishi ILP IR Control."""
 
     VERSION = 1
 
@@ -15,7 +15,7 @@ class MitsubishiAirPumpConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            return self.async_create_entry(title="Mitsubishi Air Pump", data=user_input)
+            return self.async_create_entry(title="Mitsubishi ILP IR Control", data=user_input)
 
         data_schema = vol.Schema(
             {

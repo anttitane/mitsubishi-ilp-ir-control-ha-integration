@@ -1,6 +1,6 @@
 {
-  "domain": "mitsubishi_airpump",
-  "name": "Mitsubishi Air Pump",
+  "domain": "mitsubishi_ilp_ir_control",
+  "name": "Mitsubishi ILP IR Control",
   "config_flow": true,
   "documentation": "https://github.com/anttitane/mitsubishi-ilp-ir-control-ha-integration/blob/main/README.md",
   "dependencies": [],
@@ -8,5 +8,5 @@
   "version": "1.0.0",
   "requirements": [],
   "iot_class": "local_polling",
-  "logo": "custom_components/mitsubishi_airpump/icon.png"
+  "issue_tracker": "https://github.com/anttitane/mitsubishi-ilp-ir-control-ha-integration/issues"
 }

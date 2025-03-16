@@ -1,12 +1,12 @@
 {
-  "title": "Mitsubishi Air Pump",
+  "title": "Mitsubishi ILP IR Control",
   "config": {
     "step": {
       "user": {
-        "title": "Configure Mitsubishi Air Pump",
-        "description": "Enter the details of your Mitsubishi Air Pump.",
+        "title": "Configure Mitsubishi ILP IR Control",
+        "description": "Enter the details of your Mitsubishi ILP IR Controller.",
         "data": {
-          "host": "Device IP Address",
+          "host": "Raspberry Pi IP Address",
           "port": "API Port"
         }
       }
@@ -27,8 +27,8 @@
   },
   "entity": {
     "climate": {
-      "mitsubishi_airpump": {
-        "name": "Mitsubishi Air Pump",
+      "mitsubishi_ilp_ir_control": {
+        "name": "Mitsubishi ILP IR Control",
         "state": {
           "cool": "Cooling",
           "heat": "Heating",
