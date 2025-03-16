@@ -50,6 +50,36 @@ The integration consists of:
 | `set_swing_mode` | Adjusts the vertical swing mode.        |
 | `set_swing_horizontal_mode` | Adjusts the horizontal swing mode.     |
 
+## 🏠 Adding the Climate Entity to Home Assistant Lovelace UI
+
+After installing the custom integration, you can add the `climate.mitsubishi_ilp_ir_control` entity to your Lovelace dashboard. An example configuration snippet (YAML mode) is shown below:
+
+```yaml
+- type: thermostat
+  entity: climate.mitsubishi_ilp_ir_control
+  name: Mistubishi FD25
+  features:
+    - type: climate-hvac-modes
+      hvac_modes:
+        - heat
+        - cool
+        - "off"
+    - type: climate-fan-modes
+      fan_modes:
+        - Auto
+        - Low
+        - Medium
+        - High
+    - type: climate-swing-modes
+      swing-modes:
+        - auto
+        - top
+        - middle_top
+        - middle
+        - middle_bottom
+        - bottom
+```
+
 ## 🧾 Troubleshooting
 
 If issues arise, check the logs from Home Assistant and ensure:
