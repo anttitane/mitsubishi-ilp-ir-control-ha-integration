@@ -1,6 +1,6 @@
 # 🌡️ Mitsubishi ILP IR Control Home Assistant Integration
 
-This repository contains a Home Assistant integration to control Mitsubishi air conditioners via Infrared using a Raspberry Pi. The integration communicates with a separate IR control server hosted on a Raspberry Pi.
+This repository contains a Home Assistant integration to control Mitsubishi air pump via Infrared using a Raspberry Pi. The integration communicates with a separate IR control server hosted on a Raspberry Pi.
 
 ## 📖 Overview
 
