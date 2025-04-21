@@ -1,10 +1,13 @@
 import logging
 import aiohttp
+import async_timeout
 from homeassistant.components.climate import ClimateEntity, HVACMode, ClimateEntityFeature
 from homeassistant.const import UnitOfTemperature, ATTR_TEMPERATURE
 from homeassistant.const import PRECISION_WHOLE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+import datetime
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,6 +62,7 @@ class MitsubishiIlpIrControl(ClimateEntity):
         self._host = host
         self._hvac_mode = HVACMode.OFF
         self._target_temperature = 21
+        self._current_temperature = None
         self._attr_precision = PRECISION_WHOLE
         self._attr_target_temperature_step = 1.0
         self._fan_mode = "auto"
@@ -103,6 +107,11 @@ class MitsubishiIlpIrControl(ClimateEntity):
     def target_temperature(self):
         """Return the target temperature."""
         return self._target_temperature
+
+    @property
+    def current_temperature(self):
+        """Return the current temperature."""
+        return self._current_temperature
 
     #
     # FAN MODES
@@ -214,6 +223,59 @@ class MitsubishiIlpIrControl(ClimateEntity):
                     _LOGGER.info("Sent command: %s", response_data)
             except aiohttp.ClientError as e:
                 _LOGGER.error("Error sending command: %s", e)
+
+    #
+    # STATE UPDATE
+    #
+    async def async_update(self):
+        """Fetch state from the backend API."""
+        state_url = f"http://{self._host}:8000/air_pump/state/"
+        temp_url = f"http://{self._host}:8000/air_pump/room_temperature/"
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                # Get current state
+                async with session.get(state_url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        if data.get("status") == "success" and data.get("details"):
+                            details = data["details"]
+                            
+                            # Update power state and mode
+                            if details.get("power") is False:
+                                self._hvac_mode = HVACMode.OFF
+                            elif details.get("mode") == "cool":
+                                self._hvac_mode = HVACMode.COOL
+                            elif details.get("mode") == "heat":
+                                self._hvac_mode = HVACMode.HEAT
+                            
+                            # Update other settings if available
+                            if details.get("temperature"):
+                                self._target_temperature = details["temperature"]
+                            
+                            if details.get("fan_speed"):
+                                self._fan_mode = details["fan_speed"]
+                            
+                            if details.get("vertical_mode"):
+                                self._swing_mode = details["vertical_mode"]
+                            
+                            if details.get("horizontal_mode"):
+                                self._swing_horizontal_mode = details["horizontal_mode"]
+                    else:
+                        _LOGGER.error("Failed to fetch state, status code: %s", response.status)
+                
+                # Get room temperature
+                async with session.get(temp_url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        if data.get("status") == "success" and data.get("details"):
+                            if "temperature" in data["details"]:
+                                self._current_temperature = data["details"]["temperature"]
+                    else:
+                        _LOGGER.error("Failed to fetch temperature, status code: %s", response.status)
+            
+            except aiohttp.ClientError as e:
+                _LOGGER.error("Error fetching data from API: %s", e)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
